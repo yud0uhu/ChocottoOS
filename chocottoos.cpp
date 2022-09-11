@@ -148,6 +148,7 @@ unsigned char get_top_ready_id(void)
 unsigned char current_task_id;
 void os_start(void)
 {
+    // シリアル通信の遅延が処理に作用しているため、printはそのままにする
     Serial.println("OS_START");
     current_task_id = get_top_ready_id();
 
@@ -165,7 +166,9 @@ void task_reload()
 {
     if (current_task_id == 0)
     {
-        // Serial.println("TASK_RELOAD");
+        cli();
+        // シリアル通信の遅延が処理に作用しているため、printはそのままにする
+        Serial.println("TASK_RELOAD");
         current = load_tcb;
         current_task_id = current->task_id_;
         current_task_id = current_task_id + 1;
