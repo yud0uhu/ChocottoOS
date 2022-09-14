@@ -33,7 +33,6 @@ struct task_define
     void (*task_handler_)(void);
 };
 struct task_define tasks[] = {};
-struct task_define load_tasks[] = {};
 
 enum TaskState
 {
@@ -200,7 +199,7 @@ void init_all(void)
 
 void task_reload()
 {
-    all_set_task(load_tasks);
+    all_set_task(tasks);
 }
 
 void LED1(void)
@@ -222,7 +221,6 @@ void all_set_task(struct task_define *tasks)
 {
     for (int i = 0; i < sizeof(tasks) + 1; i++)
     {
-        memcpy(&load_tasks[i], &tasks[i], sizeof(tasks[i]));
         create_task(tasks[i].task_id_, tasks[i].priority_, tasks[i].task_handler_);
     }
 }
@@ -236,11 +234,9 @@ void setup()
     pinMode(3, OUTPUT);
     pinMode(4, OUTPUT);
 
-    struct task_define tasks[] = {
-        {2, 2, LED1},
-        {3, 3, LED2},
-        {4, 4, LED3},
-    };
+    tasks[0] = {2, 2, LED1};
+    tasks[1] = {3, 3, LED2};
+    tasks[2] = {4, 4, LED3};
 
     all_set_task(tasks);
 
