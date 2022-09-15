@@ -23,7 +23,6 @@ void schedule(void);
 void timer_create(void);
 void task_reload(void);
 void task_start(void);
-void timer_init(void);
 void init_all(void);
 
 struct task_define
