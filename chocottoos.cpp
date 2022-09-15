@@ -1,4 +1,4 @@
-// Attiny85 Timer0による実装
+// Atmega328P Timer1による実装
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -23,6 +23,7 @@ void schedule(void);
 void timer_create(void);
 void task_reload(void);
 void task_start(void);
+void timer_init(void);
 void init_all(void);
 
 struct task_define
@@ -147,7 +148,6 @@ unsigned char get_top_ready_id(void)
     return 0;
 }
 
-int intr_count = 0;
 void os_start(void)
 
 {
@@ -171,6 +171,26 @@ void task_start()
     }
 }
 
+void timer_init(void)
+{
+    TCNT1 = 3036;
+}
+
+void timer_create(void)
+{
+    cli();
+    TCCR1A = 0x00;
+    TCCR1B = 0x00;
+    TCNT1 = 3036;
+    TCCR1B |= _BV(CS12);  // 256分周, CTCモード
+    TIMSK1 |= _BV(TOIE1); // オーバーフロー割り込みを許可
+}
+
+ISR(TIMER1_OVF_vect)
+{
+    os_start();
+}
+
 void init_all(void)
 {
     memset(TCB, 0, sizeof(TCB));
@@ -182,42 +202,19 @@ void task_reload()
     all_set_task(tasks);
 }
 
-void timer_create(void)
-{
-    cli();
-    TCCR0A = 0; // 初期化
-    TCCR0A = 0; // 初期化
-    TCCR0A |= (1 << WGM01);
-    TCCR0B |= _BV(1 << CS00) | _BV(1 << CS02); // 1024分周
-    OCR0A = 161;
-    TCNT0 = 0;
-    TIMSK |= _BV(OCIE0A); // 比較A割り込み許可
-}
-
-ISR(TIMER0_COMPA_vect)
-{
-    if (intr_count == 100) // 1 秒を取得するには、比較一致が 100 回発生する必要があるため、100 カウント待機
-    {
-        os_start();
-        intr_count = 0;
-    }
-    else
-        intr_count++; // intr_count のインクリメント
-}
-
 void LED1(void)
 {
-    digitalWrite(0, !digitalRead(0));
+    digitalWrite(2, !digitalRead(2));
 }
 
 void LED2(void)
 {
-    digitalWrite(1, !digitalRead(1));
+    digitalWrite(3, !digitalRead(3));
 }
 
 void LED3(void)
 {
-    digitalWrite(2, !digitalRead(2));
+    digitalWrite(4, !digitalRead(4));
 }
 
 void all_set_task(struct task_define *tasks)
@@ -233,12 +230,9 @@ void setup()
     Serial.begin(115200);
     init_all();
 
-    pinMode(0, OUTPUT);
-    digitalWrite(0, LOW);
-    pinMode(1, OUTPUT);
-    digitalWrite(1, LOW);
     pinMode(2, OUTPUT);
-    digitalWrite(2, LOW);
+    pinMode(3, OUTPUT);
+    pinMode(4, OUTPUT);
 
     tasks[0] = {2, 2, LED1};
     tasks[1] = {3, 3, LED2};
