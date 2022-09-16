@@ -124,6 +124,7 @@ void create_task(volatile unsigned char task_id, Priority priority, void (*task)
 
 void context_switch(void)
 {
+    schedule();
     if (current->state_ == READY)
     {
         readyqueue_enque(current);
@@ -157,7 +158,6 @@ void os_start(void)
     }
     current->task_id_ = get_top_ready_id();
     current->state_ = READY;
-    schedule();
     context_switch();
     task_start();
     sei();
