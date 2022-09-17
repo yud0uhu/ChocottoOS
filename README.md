@@ -1,5 +1,7 @@
 # ChocottoOS 仕様書
 
+![logo](https://user-images.githubusercontent.com/60646787/190857441-a9718eb8-1531-40d5-a37d-a27946ad7130.png)
+
 [ATmega328P 実行環境サンプル](https://www.tinkercad.com/things/6Aaprh6Yftg?sharecode=2OyEuBo7mYWo1OJAKlSDvcfxUJd8KXGvkDT3uYiYsmg)
 
 ## timer_create()
