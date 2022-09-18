@@ -179,7 +179,6 @@ void init_all(void)
 
 void task_reload()
 {
-
     tasks[0] = {2, 2, LED1};
     tasks[1] = {3, 3, LED2};
     tasks[2] = {4, 4, LED3};
